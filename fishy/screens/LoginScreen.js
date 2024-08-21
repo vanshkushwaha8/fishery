@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,13 @@ const LoginScreen = () => {
     clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
     scopes: ['profile', 'email'],
   });
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isOtpModalVisible, setOtpModalVisible] = useState(false);
+  const [verificationMethod, setVerificationMethod] = useState(''); // 'contact' or 'email'
+  const [contactNumber, setContactNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [email, setEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   React.useEffect(() => {
     if (response?.type === 'success') {
@@ -27,7 +34,55 @@ const LoginScreen = () => {
   };
 
   const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword'); // Navigate to the ForgotPassword screen
+    setModalVisible(true);
+  };
+
+  const handleVerificationMethod = (method) => {
+    setVerificationMethod(method);
+    setModalVisible(false);
+    setOtpModalVisible(true);
+  };
+
+  const handleSendOtp = () => {
+    if (contactNumber.length === 10) {
+      // Implement OTP sending logic here
+      console.log('Sending OTP to:', contactNumber);
+    } else {
+      alert('Please enter a valid 10-digit contact number.');
+    }
+  };
+
+  const handleSendResetLink = () => {
+    if (email) {
+      // Implement reset link sending logic here
+      console.log('Sending reset link to:', email);
+    } else {
+      alert('Please enter a valid email address.');
+    }
+  };
+
+  const handleSubmitOtp = () => {
+    if (otp.length === 6) {
+      // Implement OTP verification logic here
+      console.log('Verifying OTP:', otp);
+      setOtpModalVisible(false);
+    } else {
+      alert('Please enter a valid 6-digit OTP.');
+    }
+  };
+
+  const handleResetPassword = () => {
+    if (newPassword) {
+      // Implement password reset logic here
+      console.log('Resetting password:', newPassword);
+    } else {
+      alert('Please enter a new password.');
+    }
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setVerificationMethod(''); // Reset verification method
   };
 
   return (
@@ -97,6 +152,122 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Password Reset Selection Modal */}
+      <Modal
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Reset Password</Text>
+            <TouchableOpacity
+              onPress={() => handleVerificationMethod('contact')}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Verify via Contact</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleVerificationMethod('email')}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Verify via Email</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={closeModal}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* OTP / Reset Password Modal */}
+      <Modal
+        transparent={true}
+        visible={isOtpModalVisible}
+        onRequestClose={() => setOtpModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <ScrollView contentContainerStyle={styles.modalContainer}>
+            {verificationMethod === 'contact' ? (
+              <>
+                <Text style={styles.modalTitle}>Verify via Contact</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Contact Number"
+                  keyboardType="phone-pad"
+                  maxLength={10}
+                  value={contactNumber}
+                  onChangeText={setContactNumber}
+                />
+                <TouchableOpacity
+                  onPress={handleSendOtp}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>Send OTP</Text>
+                </TouchableOpacity>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter OTP"
+                  keyboardType="numeric"
+                  maxLength={6}
+                  value={otp}
+                  onChangeText={setOtp}
+                />
+                <TouchableOpacity
+                  onPress={handleSubmitOtp}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>Submit OTP</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text style={styles.modalTitle}>Verify via Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Email"
+                  keyboardType="email-address"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <TouchableOpacity
+                  onPress={handleSendResetLink}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>Send Reset Link</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            {verificationMethod === 'email' && (
+              <>
+                {/* <TextInput
+                  style={styles.input}
+                  placeholder="Enter New Password"
+                  secureTextEntry
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                /> */}
+                {/* <TouchableOpacity
+                  onPress={handleResetPassword}
+                  style={styles.modalButton}
+                >
+                  <Text style={styles.modalButtonText}>Reset Password</Text>
+                </TouchableOpacity> */}
+              </>
+            )}
+            <TouchableOpacity
+              onPress={() => setOtpModalVisible(false)}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -132,37 +303,74 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
   loginButton: {
+    backgroundColor: 'blue',
     padding: 12,
-    backgroundColor: '#4CAF50', // Login button color (Green)
-    borderRadius: 8,
+    borderRadius: 16,
     alignItems: 'center',
-    marginBottom: 8, // Reduced margin
+    marginTop: 20,
   },
   loginButtonText: {
     color: 'white',
     fontSize: 16,
   },
   forgotPasswordButton: {
-    marginBottom: 16,
+    marginTop: 10,
     alignItems: 'center',
   },
   forgotPasswordText: {
-    color: '#4CAF50', // Match the login button color
-    fontSize: 16,
+    color: 'blue',
   },
   googleButton: {
-    padding: 12,
-    backgroundColor: '#fffff', // Google blue color
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
   },
   googleImage: {
-    width: 20,
-    height: 20, // Adjust the size to fit your design
+    width: 24,
+    height: 24,
   },
   image: {
-    width: width * 0.8,  // Set the image width to 80% of the screen width
-    height: height * 0.4, // Set the image height to 40% of the screen height
+    width: width * 0.6,
+    height: height * 0.3,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: width * 0.9,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: 'blue',
+    padding: 12,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginVertical: 8,
+    width: '100%',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  modalCloseButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  modalCloseButtonText: {
+    color: 'red',
+    fontSize: 16,
   },
 });
 
