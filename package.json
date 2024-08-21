@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "tailwind-rn": "^4.2.0",
+    "twrnc": "^4.5.0"
+  }
+}
