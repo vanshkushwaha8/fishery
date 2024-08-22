@@ -24,17 +24,18 @@ const WelcomeScreen = () => {
         </View>
         <View style={tw`space-y-4`}>
           <TouchableOpacity onPress={()=> navigation.navigate('Login')}
-          style={tw`py-3 bg-yellow-400 mx-7 rounded-xl`}>
-            <Text style={tw`text-xl font-bold text-center text-gray-700`}>
+          style={tw`py-3 bg-blue-800 mx-7 rounded-xl`}>
+           <Text style={tw`text-xl font-bold text-center text-white`}>
             Login
             </Text>
+
           </TouchableOpacity>
           <View style={tw`flex-row justify-center`}>
             <Text style={tw`text-white font-semibold`}>
               Create an account?
             </Text>
             <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
-              <Text style={tw`font-semibold text-red-400`}>
+              <Text style={tw`font-semibold text-orange-400`}>
                 Sign Up
               </Text>
             </TouchableOpacity>
