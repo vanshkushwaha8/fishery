@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, Dimensions, Modal, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
@@ -19,9 +19,10 @@ const LoginScreen = () => {
   const [contactNumber, setContactNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState(''); // Added state for password
   const [newPassword, setNewPassword] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
       console.log('ID Token:', id_token);
@@ -31,6 +32,7 @@ const LoginScreen = () => {
 
   const handleLogin = () => {
     console.log('Login button clicked');
+    navigation.navigate('Home'); // Navigate to HomeScreen when login button is clicked
   };
 
   const handleForgotPassword = () => {
@@ -114,6 +116,8 @@ const LoginScreen = () => {
               style={styles.input}
               placeholder="Enter Email"
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail} // Update email state
             />
           </View>
 
@@ -123,12 +127,16 @@ const LoginScreen = () => {
               style={styles.input}
               placeholder="Enter Password"
               secureTextEntry
+              value={password}
+              onChangeText={setPassword} // Update password state
             />
           </View>
 
+          {/* Disable login button if either email or password is empty */}
           <TouchableOpacity
             onPress={handleLogin}
-            style={styles.loginButton}
+            style={[styles.loginButton, (email === '' || password === '') && styles.loginButtonDisabled]} // Apply disabled style
+            disabled={email === '' || password === ''} // Disable button
           >
             <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
@@ -244,19 +252,19 @@ const LoginScreen = () => {
             )}
             {verificationMethod === 'email' && (
               <>
-                {/* <TextInput
+                <TextInput
                   style={styles.input}
                   placeholder="Enter New Password"
                   secureTextEntry
                   value={newPassword}
                   onChangeText={setNewPassword}
-                /> */}
-                {/* <TouchableOpacity
+                />
+                <TouchableOpacity
                   onPress={handleResetPassword}
                   style={styles.modalButton}
                 >
                   <Text style={styles.modalButtonText}>Reset Password</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
               </>
             )}
             <TouchableOpacity
@@ -272,67 +280,72 @@ const LoginScreen = () => {
   );
 };
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   form: {
-    flex: 1,
-    justifyContent: 'center', // Center the form
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'lightgray',
-    borderRadius: 16,
-    padding: 8,
-    marginBottom: 8, // Reduced margin to fit all inputs on the screen
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingHorizontal: 10,
   },
   icon: {
-    marginLeft: 8,
-    marginRight: 8,
+    marginRight: 10,
   },
   input: {
     flex: 1,
-    color: 'gray',
-  },
-  loginButton: {
-    backgroundColor: 'blue',
-    padding: 12,
-    borderRadius: 16,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  loginButtonText: {
-    color: 'white',
+    height: 40,
     fontSize: 16,
   },
-  forgotPasswordButton: {
-    marginTop: 10,
+  loginButton: {
+    backgroundColor: themeColors.bg,
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
+    marginBottom: 16,
+  },
+  loginButtonDisabled: {
+    backgroundColor: 'lightgray', // Disable color
+  },
+  loginButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  forgotPasswordButton: {
+    alignItems: 'center',
+    marginBottom: 16,
   },
   forgotPasswordText: {
-    color: 'blue',
+    color: 'gray',
+    textDecorationLine: 'underline',
   },
   googleButton: {
-    flexDirection: 'row',
+    backgroundColor: '#4285F4',
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
   },
   googleImage: {
     width: 24,
     height: 24,
-  },
-  image: {
-    width: width * 0.6,
-    height: height * 0.3,
   },
   modalBackground: {
     flex: 1,
@@ -341,36 +354,43 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: width * 0.9,
+    width: width * 0.8,
     backgroundColor: 'white',
-    borderRadius: 16,
+    borderRadius: 8,
     padding: 20,
-    alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   modalButton: {
-    backgroundColor: 'blue',
-    padding: 12,
-    borderRadius: 16,
+    backgroundColor: themeColors.bg,
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
-    marginVertical: 8,
-    width: '100%',
+    marginBottom: 16,
   },
   modalButtonText: {
-    color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
   },
   modalCloseButton: {
-    marginTop: 20,
+    backgroundColor: 'gray',
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   modalCloseButtonText: {
-    color: 'red',
     fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  image: {
+    height: 250,
+    width: 250,
   },
 });
 
