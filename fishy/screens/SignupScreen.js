@@ -5,8 +5,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useIdTokenAuthRequest } from 'expo-auth-session/providers/google';
 import { Picker } from '@react-native-picker/picker';
-
-const themeColors = { bg: '#B6E6FC' };
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SignupScreen = () => {
   const navigation = useNavigation();
@@ -103,182 +102,187 @@ const SignupScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+    <LinearGradient
+      colors={['#B3E5FC', '#E3F2FD']}
       style={{ flex: 1 }}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <SafeAreaView style={{ backgroundColor: themeColors.bg, paddingVertical: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={{ backgroundColor: 'yellow', padding: 8, borderTopRightRadius: 16, borderBottomLeftRadius: 16, marginLeft: 16 }}
-              >
-                <FontAwesome name="arrow-left" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
-              <Image 
-                source={require('../assets/images/welcome.png')} 
-                style={styles.image}
-                resizeMode="contain" 
-              />
-            </View>
-          </SafeAreaView>
-
-          <View style={[styles.formContainer]}>
-            <View style={styles.form}>
-              <View style={styles.inputContainer}>
-                <FontAwesome name="user" size={20} color="gray" style={styles.icon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter Name"
-                />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <FontAwesome name="envelope" size={20} color="gray" style={styles.icon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter Email"
-                  keyboardType="email-address"
-                />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <FontAwesome name="phone" size={20} color="gray" style={styles.icon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter Contact"
-                  keyboardType="phone-pad"
-                  value={contact}
-                  onChangeText={setContact}
-                />
-                <TouchableOpacity onPress={handleVerify} style={[styles.verifyButton, { opacity: contact.trim().length === 10 ? 1 : 0.5 }]} disabled={contact.trim().length !== 10}>
-                  <Text style={styles.verifyButtonText}>Verify</Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={{ flex: 1 }}>
+            <SafeAreaView style={{ paddingVertical: 10 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={{ backgroundColor: 'yellow', padding: 8, borderTopRightRadius: 16, borderBottomLeftRadius: 16, marginLeft: 16 }}
+                >
+                  <FontAwesome name="arrow-left" size={20} color="black" />
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.inputContainer}>
-                <FontAwesome name="globe" size={20} color="gray" style={styles.icon} />
-                <Picker
-                  selectedValue={selectedCountry}
-                  onValueChange={(itemValue) => {
-                    setSelectedCountry(itemValue);
-                    setSelectedState('');
-                    setSelectedCity('');
-                  }}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select Country" value="" />
-                  {Object.keys(countryStateCityData).map((country) => (
-                    <Picker.Item key={country} label={country} value={country} />
-                  ))}
-                </Picker>
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                <Image 
+                  source={require('../assets/images/welcome.png')} 
+                  style={styles.image}
+                  resizeMode="contain" 
+                />
               </View>
+            </SafeAreaView>
 
-              {selectedCountry ? (
+            <View style={[styles.formContainer]}>
+              <View style={styles.form}>
                 <View style={styles.inputContainer}>
-                  <FontAwesome name="map-marker" size={20} color="gray" style={styles.icon} />
+                  <FontAwesome name="user" size={20} color="gray" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <FontAwesome name="envelope" size={20} color="gray" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Email"
+                    keyboardType="email-address"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <FontAwesome name="phone" size={20} color="gray" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Contact"
+                    keyboardType="phone-pad"
+                    value={contact}
+                    onChangeText={setContact}
+                  />
+                  <TouchableOpacity onPress={handleVerify} style={[styles.verifyButton, { opacity: contact.trim().length === 10 ? 1 : 0.5 }]} disabled={contact.trim().length !== 10}>
+                    <Text style={styles.verifyButtonText}>Verify</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <FontAwesome name="globe" size={20} color="gray" style={styles.icon} />
                   <Picker
-                    selectedValue={selectedState}
+                    selectedValue={selectedCountry}
                     onValueChange={(itemValue) => {
-                      setSelectedState(itemValue);
+                      setSelectedCountry(itemValue);
+                      setSelectedState('');
                       setSelectedCity('');
                     }}
                     style={styles.picker}
                   >
-                    <Picker.Item label="Select State" value="" />
-                    {Object.keys(countryStateCityData[selectedCountry].states).map((state) => (
-                      <Picker.Item key={state} label={state} value={state} />
+                    <Picker.Item label="Select Country" value="" />
+                    {Object.keys(countryStateCityData).map((country) => (
+                      <Picker.Item key={country} label={country} value={country} />
                     ))}
                   </Picker>
                 </View>
-              ) : null}
 
-              {selectedState ? (
-                <View style={styles.inputContainer}>
-                  <FontAwesome name="building" size={20} color="gray" style={styles.icon} />
-                  <Picker
-                    selectedValue={selectedCity}
-                    onValueChange={(itemValue) => setSelectedCity(itemValue)}
-                    style={styles.picker}
+                {selectedCountry ? (
+                  <View style={styles.inputContainer}>
+                    <FontAwesome name="map-marker" size={20} color="gray" style={styles.icon} />
+                    <Picker
+                      selectedValue={selectedState}
+                      onValueChange={(itemValue) => {
+                        setSelectedState(itemValue);
+                        setSelectedCity('');
+                      }}
+                      style={styles.picker}
+                    >
+                      <Picker.Item label="Select State" value="" />
+                      {Object.keys(countryStateCityData[selectedCountry].states).map((state) => (
+                        <Picker.Item key={state} label={state} value={state} />
+                      ))}
+                    </Picker>
+                  </View>
+                ) : null}
+
+                {selectedState ? (
+                  <View style={styles.inputContainer}>
+                    <FontAwesome name="building" size={20} color="gray" style={styles.icon} />
+                    <Picker
+                      selectedValue={selectedCity}
+                      onValueChange={(itemValue) => setSelectedCity(itemValue)}
+                      style={styles.picker}
+                    >
+                      <Picker.Item label="Select City" value="" />
+                      {countryStateCityData[selectedCountry].states[selectedState].map((city) => (
+                        <Picker.Item key={city} label={city} value={city} />
+                      ))}
+                    </Picker>
+                  </View>
+                ) : null}
+
+                <TouchableOpacity
+                  onPress={handleSignup}
+                  style={[styles.signupButton, { opacity: formValid ? 1 : 0.5 }]}
+                  disabled={!formValid}
+                >
+                  <Text style={styles.signupButtonText}>Signup</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => promptAsync()}
+                  style={styles.googleButton}
+                  disabled={!request}
+                >
+                  <Image source={require('../assets/icons/google.png')} style={{ width: 20, height: 20 }} />
+                </TouchableOpacity>
+              </View>
+
+              {/* OTP Verification Status */}
+              {isOtpVerified && (
+                <View style={styles.otpStatusContainer}>
+                  <FontAwesome name="check-circle" size={24} color="green" />
+                  <Text style={styles.otpStatusText}>OTP Verified</Text>
+                </View>
+              )}
+            </View>
+
+            {/* OTP Verification Modal */}
+            <Modal
+              transparent={true}
+              visible={isModalVisible}
+              onRequestClose={() => setIsModalVisible(false)}
+            >
+              <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                  <Text style={styles.modalTitle}>Enter OTP</Text>
+                  <TextInput
+                    style={styles.otpInput}
+                    placeholder="Enter OTP"
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    value={otp}
+                    onChangeText={handleOtpChange}
+                  />
+                  <TouchableOpacity
+                    onPress={handleOtpVerification}
+                    style={styles.verifyButton}
                   >
-                    <Picker.Item label="Select City" value="" />
-                    {countryStateCityData[selectedCountry].states[selectedState].map((city) => (
-                      <Picker.Item key={city} label={city} value={city} />
-                    ))}
-                  </Picker>
+                    {isOtpVerified ? (
+                      <FontAwesome name="check" size={20} color="white" />
+                    ) : (
+                      <Text style={styles.verifyButtonText}>Verify OTP</Text>
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setIsModalVisible(false)}
+                    style={styles.closeButton}
+                  >
+                    <Text style={styles.closeButtonText}>Close</Text>
+                  </TouchableOpacity>
                 </View>
-              ) : null}
-
-              <TouchableOpacity
-                onPress={handleSignup}
-                style={[styles.signupButton, { opacity: formValid ? 1 : 0.5 }]}
-                disabled={!formValid}
-              >
-                <Text style={styles.signupButtonText}>Signup</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => promptAsync()}
-                style={styles.googleButton}
-                disabled={!request}
-              >
-                <Image source={require('../assets/icons/google.png')} style={{ width: 20, height: 20 }} />
-              </TouchableOpacity>
-            </View>
-
-            {/* OTP Verification Status */}
-            {isOtpVerified && (
-              <View style={styles.otpStatusContainer}>
-                <FontAwesome name="check-circle" size={24} color="green" />
-                <Text style={styles.otpStatusText}>OTP Verified</Text>
               </View>
-            )}
+            </Modal>
           </View>
-
-          {/* OTP Verification Modal */}
-          <Modal
-            transparent={true}
-            visible={isModalVisible}
-            onRequestClose={() => setIsModalVisible(false)}
-          >
-            <View style={styles.modalBackground}>
-              <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Enter OTP</Text>
-                <TextInput
-                  style={styles.otpInput}
-                  placeholder="Enter OTP"
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  value={otp}
-                  onChangeText={handleOtpChange}
-                />
-                <TouchableOpacity
-                  onPress={handleOtpVerification}
-                  style={styles.verifyButton}
-                >
-                  {isOtpVerified ? (
-                    <FontAwesome name="check" size={20} color="white" />
-                  ) : (
-                    <Text style={styles.verifyButtonText}>Verify OTP</Text>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setIsModalVisible(false)}
-                  style={styles.closeButton}
-                >
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
@@ -400,3 +404,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignupScreen;
+
